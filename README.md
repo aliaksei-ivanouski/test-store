@@ -20,6 +20,7 @@ Because we are in growth stage now, we have some limitations:
 - We have only 4 ingredients for pancakes: 'dark chocolate', 'milk chocolate', 'whipped cream', and 'hazelnuts'. But we can add more ingredients in the future to our database.
 - We can guarantee 30 seconds to prepare your pancakes, and it can be changed in the configuration file (application.yml) when we improve our process.
 - Since we have limited number of delivery guys, we check the orders every 10 seconds, and it can be changed in the configuration file (application.yml) when we hire more delivery guys.
+
 So, accept our apologies for any inconvenience and enjoy our pancakes, which we are happy to offer.
 
 ### Thank you
