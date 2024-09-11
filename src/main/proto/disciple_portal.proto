@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+option java_package = "org.aivanouski.store.proto";
+
+import "google/protobuf/timestamp.proto";
+
+service DiscipleService {
+  rpc createOrder (OrderCreateRequest) returns (OrderResponse) {}
+  rpc getIngredients (EmptyRequest) returns (IngredientsResponse) {}
+  rpc addPancakes (AddPancakesRequest) returns (EmptyResponse) {}
+  rpc completeOrder (CompleteOrderRequest) returns (OrderResponse) {}
+}
+
+message OrderCreateRequest {
+  int32 building = 1;
+  int32 room = 2;
+}
+
+message AddPancakesRequest {
+  string order_id = 1;
+  repeated string ingredients = 2;
+}
+
+message IngredientsResponse {
+  IngredientsResponseBody body = 1;
+  Metadata metadata = 2;
+}
+
+message IngredientsResponseBody {
+  repeated IngredientItem items = 1;
+}
+
+message IngredientItem {
+  string id = 1;
+  string name = 2;
+}
+
+message OrderResponse {
+  OrderResponseBody body = 1;
+  Metadata metadata = 2;
+}
+message OrderResponseBody {
+  string id = 1;
+  int32 building = 2;
+  int32 room = 3;
+  string status = 4;
+  repeated string ingredients = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message OrderId {
+  string id = 1;
+}
+
+message CompleteOrderRequest {
+  string id = 1;
+  Status status = 2;
+  enum Status {
+    UNKNOWN = 0;
+    COMPLETED = 1;
+    CANCELLED = 2;
+  }
+}
+
+message EmptyRequest {
+}
+
+message EmptyResponse {
+  Metadata metadata = 2;
+}
+
+message Metadata {
+  int32 ret = 1;
+  string message = 2;
+}

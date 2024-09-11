@@ -1,0 +1,61 @@
+services:
+
+  app:
+    build: "."
+    container_name: 'teststore-app'
+    ports:
+      - '19090:9090'
+    platform: linux/amd64
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - server.port=9090
+      - db.url=jdbc:postgresql://postgres:5432/teststoredb?createDatabaseIfNotExist=true
+      - db.username=aliaksei
+      - db.password=letmein
+      - redis.host=redis
+      - redis.port=6379
+    networks:
+      - teststore
+
+  postgres:
+    image: postgres
+    container_name: 'teststore-postgres'
+    ports:
+      - '15432:5432'
+    platform: linux/amd64
+    environment:
+      POSTGRES_DB: teststoredb
+      POSTGRES_USER: aliaksei
+      POSTGRES_PASSWORD: letmein
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aliaksei"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+    volumes:
+      - ./_db:/var/lib/postgresql/data
+    networks:
+      - teststore
+
+  redis:
+    image: redis:alpine
+    container_name: 'teststore-redis'
+    ports:
+      - '16379:6379'
+    platform: linux/amd64
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+    volumes:
+      - ./_redis:/data
+    networks:
+      - teststore
+
+networks:
+  teststore:
