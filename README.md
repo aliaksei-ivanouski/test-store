@@ -6,7 +6,7 @@ Welcome to Test Store, a pancake shop software solution for ordering pancakes.
 
 ### Use case
 1. Disciple can create an Order and specify the building and the room number (org.aivanouski.store.portal.DisciplePortalService.createOrder).
-2. Desciple has access to the available ingredients (org.aivanouski.store.portal.DisciplePortalService.getIngredients).
+2. Disciple has access to the available ingredients (org.aivanouski.store.portal.DisciplePortalService.getIngredients).
 3. After that to receive later the most delicious pancake the Disciple can add ingredients to the created Order from the menu in p.2 (org.aivanouski.store.portal.DisciplePortalService.addPancakes).
 4. Disciple can choose to complete or cancel the Order, if cancelled the Order is removed from the database (org.aivanouski.store.portal.DisciplePortalService.completeOrder - pass status CANCELLED).
 5. Disciple can complete the Order and the Order will be passed to Chef to prepare the pancakes (org.aivanouski.store.portal.DisciplePortalService.completeOrder - pass status COMPLETED).
@@ -29,8 +29,7 @@ The feedback is much appreciated.
 
 We hope you enjoy our pancakes and have a great day!
 
-Kind regards,
-
+Kind regards,\
 Test Store Team
 
 
