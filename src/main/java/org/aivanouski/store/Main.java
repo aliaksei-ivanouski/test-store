@@ -18,12 +18,12 @@ public class Main {
         GsonConfig.getInstance().init();
         OrderDeliveryJob.getInstance().init();
 
-        GrpcServerConfig.getInstance().init();
-
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             PostgresConfig.getInstance().close();
             RedisConfig.getInstance().close();
             GrpcServerConfig.getInstance().shutdown();
         }));
+
+        GrpcServerConfig.getInstance().init();
     }
 }
