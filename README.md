@@ -11,15 +11,15 @@ Welcome to Test Store, a pancake shop software solution for ordering pancakes.
 4. Disciple can choose to complete or cancel the Order, if cancelled the Order is removed from the database (org.aivanouski.store.portal.DisciplePortalService.completeOrder - pass status CANCELLED).
 5. Disciple can complete the Order and the Order will be passed to Chef to prepare the pancakes (org.aivanouski.store.portal.DisciplePortalService.completeOrder - pass status COMPLETED).
 6. Order usually preparing for 30 seconds (yeah, that's fast, because we have highly experienced Chef) (org.aivanouski.store.order.OrderDeliveryJob.checkOrdersAndDeliver).
-7. Our delivery guys checking every 10 second whether any Orders ready to delivery and report if any (org.aivanouski.store.order.OrderDeliveryJob.checkOrdersAndDeliver).
+7. Our delivery guys checking every 10 second whether any Orders ready for delivery and report if any (org.aivanouski.store.order.OrderDeliveryJob.checkOrdersAndDeliver).
 8. After the Order is sent for delivery it is removed from the database (org.aivanouski.store.order.OrderDeliveryJob.checkOrdersAndDeliver).
 
 ### Limitations
-Because we are in growth stage now, we have some limitations:
-- Our delivery area is not big, so we have only 50 buildings with 120 rooms in each, and it can be changed anytime in the configuration file (application.yml).
+Because we are in a growth stage now, we have some limitations:
+- Our delivery area is not big, so we have only 50 buildings with 120 rooms in each, and it can be changed anytime in the configuration file (application.properties).
 - We have only 4 ingredients for pancakes: 'dark chocolate', 'milk chocolate', 'whipped cream', and 'hazelnuts'. But we can add more ingredients in the future to our database.
-- We can guarantee 30 seconds to prepare your pancakes, and it can be changed in the configuration file (application.yml) when we improve our process.
-- Since we have limited number of delivery guys, we check the orders every 10 seconds, and it can be changed in the configuration file (application.yml) when we hire more delivery guys.
+- We can guarantee 30 seconds to prepare your pancakes, and it can be changed in the configuration file (application.properties) when we improve our process.
+- Since we have limited number of delivery guys, we check the orders every 10 seconds, and it can be changed in the configuration file (application.properties) when we hire more delivery guys.
 
 So, accept our apologies for any inconvenience and enjoy our pancakes, which we are happy to offer.
 
