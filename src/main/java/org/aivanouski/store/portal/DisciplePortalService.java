@@ -32,11 +32,6 @@ public class DisciplePortalService extends DiscipleServiceGrpc.DiscipleServiceIm
     private final OrderDAO orderDAO;
     private final IngredientDAO ingredientDAO;
 
-    public DisciplePortalService() {
-        this.orderDAO = OrderDAOImpl.getInstance();
-        this.ingredientDAO = IngredientDAOImpl.getInstance();
-    }
-
     public DisciplePortalService(OrderDAO orderDAO, IngredientDAO ingredientDAO) {
         this.orderDAO = orderDAO;
         this.ingredientDAO = ingredientDAO;

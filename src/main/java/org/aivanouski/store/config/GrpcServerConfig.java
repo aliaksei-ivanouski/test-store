@@ -2,6 +2,8 @@ package org.aivanouski.store.config;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import org.aivanouski.store.ingredient.IngredientDAOImpl;
+import org.aivanouski.store.order.OrderDAOImpl;
 import org.aivanouski.store.portal.DisciplePortalService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +31,10 @@ public class GrpcServerConfig {
     public void init() throws IOException, InterruptedException {
         server = ServerBuilder
                 .forPort(Integer.parseInt(PROPERTIES.getProperty("server.port")))
-                .addService(new DisciplePortalService()).build();
+                .addService(new DisciplePortalService(
+                        OrderDAOImpl.getInstance(),
+                        IngredientDAOImpl.getInstance()
+                )).build();
 
         server.start();
         log.info("Server started, listening on {}", server.getPort());
