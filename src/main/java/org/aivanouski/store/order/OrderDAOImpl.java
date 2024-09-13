@@ -1,6 +1,7 @@
 package org.aivanouski.store.order;
 
 import org.aivanouski.store.config.PostgresConfig;
+import org.aivanouski.store.error.DatabaseOperationException;
 import org.aivanouski.store.error.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +47,9 @@ public class OrderDAOImpl implements OrderDAO {
                 return orderById;
             }
         } catch (SQLException e) {
-            log.error("Failed to create order, name", e);
+            String message = String.format("Failed to create order, building: %d, room: %d", order.getBuilding(), order.getRoom());
+            log.error(message, e);
+            throw new DatabaseOperationException(message);
         }
         return null;
     }
@@ -72,7 +75,9 @@ public class OrderDAOImpl implements OrderDAO {
                     );
                 }
             } catch (SQLException e) {
-                log.error(String.format("Failed to get order, id: %s", id), e);
+                String message = String.format("Failed to get order, id: %s", id);
+                log.error(message, e);
+                throw new DatabaseOperationException(message);
             }
         }
         if (order == null) {
@@ -103,7 +108,9 @@ public class OrderDAOImpl implements OrderDAO {
                     orders.add(order);
                 }
             } catch (SQLException e) {
-                log.error(String.format("Failed to get order, status: %s", status), e);
+                String message = String.format("Failed to get orders, status: %s", status);
+                log.error(message, e);
+                throw new DatabaseOperationException(message);
             }
         }
         return orders;
@@ -123,7 +130,9 @@ public class OrderDAOImpl implements OrderDAO {
             Order orderById = this.getOrderById(orderId);
             cache.createOrder(orderById);
         } catch (SQLException e) {
-            log.error(String.format("Failed to add ingredients to order, id: %s", orderId), e);
+            String message = String.format("Failed to add ingredients to order, id: %s", orderId);
+            log.error(message, e);
+            throw new DatabaseOperationException(message);
         }
     }
 
@@ -145,9 +154,10 @@ public class OrderDAOImpl implements OrderDAO {
             cache.createOrder(orderById);
             return orderById;
         } catch (SQLException e) {
-            log.error(String.format("Failed to update order, id: %s", order.getId()), e);
+            String message = String.format("Failed to update order, id: %s", order.getId());
+            log.error(message, e);
+            throw new DatabaseOperationException(message);
         }
-        return null;
     }
 
     @Override
@@ -160,7 +170,9 @@ public class OrderDAOImpl implements OrderDAO {
 
             cache.deleteOrder(id);
         } catch (SQLException e) {
-            log.error(String.format("Failed to delete order, id: %s", id), e);
+            String message = String.format("Failed to delete order, id: %s", id);
+            log.error(message, e);
+            throw new DatabaseOperationException(message);
         }
     }
 }

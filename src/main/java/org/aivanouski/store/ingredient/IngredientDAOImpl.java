@@ -1,6 +1,7 @@
 package org.aivanouski.store.ingredient;
 
 import org.aivanouski.store.config.PostgresConfig;
+import org.aivanouski.store.error.DatabaseOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,9 @@ public class IngredientDAOImpl implements IngredientDAO {
                 cache.createIngredient(ingredient);
             }
         } catch (SQLException e) {
-            log.error("Failed to get all ingredients", e);
+            String message = "Failed to get all ingredients";
+            log.error(message, e);
+            throw new DatabaseOperationException(message);
         }
         return ingredients;
     }

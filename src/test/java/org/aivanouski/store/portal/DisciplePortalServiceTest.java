@@ -5,6 +5,7 @@ import io.grpc.Server;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import org.aivanouski.store.config.PropertiesConfig;
+import org.aivanouski.store.error.DatabaseOperationException;
 import org.aivanouski.store.ingredient.Ingredient;
 import org.aivanouski.store.ingredient.IngredientDAOImpl;
 import org.aivanouski.store.order.Order;
@@ -138,6 +139,27 @@ public class DisciplePortalServiceTest {
     }
 
     @Test
+    void createOrderTest_sqlException() {
+        // given
+
+        // when
+        when(orderDAO.createOrder(any(Order.class)))
+                .thenThrow(new DatabaseOperationException(String.format("Failed to create order, building: %d, room: %d", 10, 111)));
+        DisciplePortal.OrderResponse response = stub.createOrder(
+                DisciplePortal.OrderCreateRequest.newBuilder()
+                        .setBuilding(10)
+                        .setRoom(111)
+                        .build()
+        );
+
+        // then
+        DisciplePortal.Metadata metadata = response.getMetadata();
+        assertEquals(1, metadata.getRet());
+        assertEquals(String.format("Error creating order: Failed to create order, building: %d, room: %d", 10, 111),
+                metadata.getMessage());
+    }
+
+    @Test
     void getIngredientsTest() {
         // given
         List<Ingredient> ingredients = Arrays.asList(
@@ -184,18 +206,19 @@ public class DisciplePortalServiceTest {
     }
 
     @Test
-    void getIngredientsTest_exception() {
+    void getIngredientsTest_sqlException() {
         // given
 
         // when
-        when(ingredientDAO.getAllIngredients()).thenThrow(new RuntimeException("Some message"));
+        when(ingredientDAO.getAllIngredients())
+                .thenThrow(new DatabaseOperationException("Failed to get all ingredients"));
         DisciplePortal.IngredientsResponse response
                 = stub.getIngredients(DisciplePortal.EmptyRequest.newBuilder().build());
 
         // then
         DisciplePortal.Metadata metadata = response.getMetadata();
         assertEquals(1, metadata.getRet());
-        assertEquals("Error getting ingredients: Some message", metadata.getMessage());
+        assertEquals("Error getting ingredients: Failed to get all ingredients", metadata.getMessage());
     }
 
     @Test
@@ -249,8 +272,10 @@ public class DisciplePortalServiceTest {
     }
 
     @Test
-    void addPancakesTest_exception() {
+    void addPancakesTest_sqlException_1() {
         // given
+        UUID orderId = UUID.randomUUID();
+
         List<Ingredient> ingredients = Arrays.asList(
                 new Ingredient.Builder().setId(UUID.fromString("2fd86376-c492-4c16-8665-881cf47c96ca")).setName("dark chocolate").build(),
                 new Ingredient.Builder().setId(UUID.fromString("bda44844-23ad-4487-ac9d-1849b2bfd9ff")).setName("milk chocolate").build(),
@@ -260,17 +285,44 @@ public class DisciplePortalServiceTest {
 
         // when
         when(ingredientDAO.getAllIngredients()).thenReturn(ingredients);
-        doThrow(new RuntimeException("Some message")).when(orderDAO).addIngredients(any(UUID.class), any(List.class));
+        doThrow(new DatabaseOperationException(String.format("Failed to add ingredients to order, id: %s", orderId)))
+                .when(orderDAO).addIngredients(any(UUID.class), any(List.class));
         DisciplePortal.EmptyResponse response
                 = stub.addPancakes(DisciplePortal.AddPancakesRequest.newBuilder()
-                .setOrderId(UUID.randomUUID().toString())
+                .setOrderId(orderId.toString())
                 .addAllIngredients(ingredients.stream().map(Ingredient::getId).map(UUID::toString).collect(Collectors.toList()))
                 .build());
 
         // then
         DisciplePortal.Metadata metadata = response.getMetadata();
         assertEquals(1, metadata.getRet());
-        assertEquals("Error adding pancakes: Some message", metadata.getMessage());
+        assertEquals(String.format("Error adding pancakes: Failed to add ingredients to order, id: %s", orderId), metadata.getMessage());
+    }
+
+    @Test
+    void addPancakesTest_sqlException_2() {
+        // given
+        UUID orderId = UUID.randomUUID();
+
+        List<Ingredient> ingredients = Arrays.asList(
+                new Ingredient.Builder().setId(UUID.fromString("2fd86376-c492-4c16-8665-881cf47c96ca")).setName("dark chocolate").build(),
+                new Ingredient.Builder().setId(UUID.fromString("bda44844-23ad-4487-ac9d-1849b2bfd9ff")).setName("milk chocolate").build(),
+                new Ingredient.Builder().setId(UUID.fromString("71251065-1134-4808-b47e-38320f3c307d")).setName("whipped cream").build(),
+                new Ingredient.Builder().setId(UUID.fromString("22595a60-3fe4-47e3-8482-4140e10f696f")).setName("hazelnuts").build()
+        );
+
+        // when
+        doThrow(new DatabaseOperationException("Failed to get all ingredients")).when(ingredientDAO).getAllIngredients();
+        DisciplePortal.EmptyResponse response
+                = stub.addPancakes(DisciplePortal.AddPancakesRequest.newBuilder()
+                .setOrderId(orderId.toString())
+                .addAllIngredients(ingredients.stream().map(Ingredient::getId).map(UUID::toString).collect(Collectors.toList()))
+                .build());
+
+        // then
+        DisciplePortal.Metadata metadata = response.getMetadata();
+        assertEquals(1, metadata.getRet());
+        assertEquals("Error adding pancakes: Failed to get all ingredients", metadata.getMessage());
     }
 
     @Test
@@ -366,6 +418,25 @@ public class DisciplePortalServiceTest {
         assertEquals(String.format("Error completing order: Unknown target order status, please specify %s or %s",
                 DisciplePortal.CompleteOrderRequest.Status.COMPLETED,
                 DisciplePortal.CompleteOrderRequest.Status.CANCELLED), metadata.getMessage());
+    }
+
+    @Test
+    void completeOrderTest_sqlException() {
+        // given
+        UUID id = UUID.randomUUID();
+
+        // when
+        when(orderDAO.getOrderById(any(UUID.class))).thenReturn(new Order.Builder().setId(id).build());
+        doThrow(new DatabaseOperationException(String.format("Failed to delete order, id: %s", id))).when(orderDAO).deleteOrder(id);
+        DisciplePortal.OrderResponse response = stub.completeOrder(DisciplePortal.CompleteOrderRequest.newBuilder()
+                .setId(id.toString())
+                .setStatus(CANCELLED)
+                .build());
+
+        // then
+        DisciplePortal.Metadata metadata = response.getMetadata();
+        assertEquals(1, metadata.getRet());
+        assertEquals(String.format("Error completing order: Failed to delete order, id: %s", id), metadata.getMessage());
     }
 
     @AfterEach
