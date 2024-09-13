@@ -7,13 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Properties;
+
+import static org.aivanouski.store.config.PropertiesConfig.PROPERTIES;
 
 public class GrpcServerConfig {
 
     private static final Logger log = LoggerFactory.getLogger(GrpcServerConfig.class);
-
-    private static final Properties properties = PropertiesConfig.PROPERTIES;
 
     private Server server;
 
@@ -29,7 +28,7 @@ public class GrpcServerConfig {
 
     public void init() throws IOException, InterruptedException {
         server = ServerBuilder
-                .forPort(Integer.parseInt(properties.getProperty("server.port")))
+                .forPort(Integer.parseInt(PROPERTIES.getProperty("server.port")))
                 .addService(new DisciplePortalService()).build();
 
         server.start();

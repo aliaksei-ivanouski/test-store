@@ -21,22 +21,20 @@ public class TestBase {
             .withExposedPorts(6379)
             .withReuse(true);
 
-    private static final Properties properties = PropertiesConfig.PROPERTIES;
-
     @BeforeAll
     protected static void beforeAll() {
         PropertiesConfig.getInstance().init();
         GsonConfig.getInstance().init();
 
         postgres.start();
-        properties.setProperty("db.url", postgres.getJdbcUrl());
-        properties.setProperty("db.username", postgres.getUsername());
-        properties.setProperty("db.password", postgres.getPassword());
+        PropertiesConfig.PROPERTIES.setProperty("db.url", postgres.getJdbcUrl());
+        PropertiesConfig.PROPERTIES.setProperty("db.username", postgres.getUsername());
+        PropertiesConfig.PROPERTIES.setProperty("db.password", postgres.getPassword());
         PostgresConfig.getInstance().init();
 
         redis.start();
-        properties.setProperty("redis.host", redis.getHost());
-        properties.setProperty("redis.port", String.valueOf(redis.getMappedPort(6379)));
+        PropertiesConfig.PROPERTIES.setProperty("redis.host", redis.getHost());
+        PropertiesConfig.PROPERTIES.setProperty("redis.port", String.valueOf(redis.getMappedPort(6379)));
         RedisConfig.getInstance().init();
     }
 

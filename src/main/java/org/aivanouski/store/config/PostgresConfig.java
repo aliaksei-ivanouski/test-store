@@ -8,14 +8,14 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
+
+import static org.aivanouski.store.config.PropertiesConfig.PROPERTIES;
 
 public class PostgresConfig {
 
     private static final Logger log = LoggerFactory.getLogger(PostgresConfig.class);
 
     private HikariDataSource dataSource;
-    private static final Properties properties = PropertiesConfig.PROPERTIES;
 
     private static class PostgresConfigHelper {
         private static final PostgresConfig INSTANCE = new PostgresConfig();
@@ -30,15 +30,15 @@ public class PostgresConfig {
     public void init() {
         HikariConfig config = new HikariConfig();
 
-        config.setJdbcUrl(properties.getProperty("db.url"));
-        config.setUsername(properties.getProperty("db.username"));
-        config.setPassword(properties.getProperty("db.password"));
+        config.setJdbcUrl(PROPERTIES.getProperty("db.url"));
+        config.setUsername(PROPERTIES.getProperty("db.username"));
+        config.setPassword(PROPERTIES.getProperty("db.password"));
 
-        config.setMaximumPoolSize(Integer.parseInt(properties.getProperty("hikari.pool-size")));
-        config.setMinimumIdle(Integer.parseInt(properties.getProperty("hikari.min-idle")));
-        config.setIdleTimeout(Integer.parseInt(properties.getProperty("hikari.idle-timout")));
-        config.setMaxLifetime(Integer.parseInt(properties.getProperty("hikari.max-lifetime")));
-        config.setConnectionTimeout(Integer.parseInt(properties.getProperty("hikari.connection-timeout")));
+        config.setMaximumPoolSize(Integer.parseInt(PROPERTIES.getProperty("hikari.pool-size")));
+        config.setMinimumIdle(Integer.parseInt(PROPERTIES.getProperty("hikari.min-idle")));
+        config.setIdleTimeout(Integer.parseInt(PROPERTIES.getProperty("hikari.idle-timout")));
+        config.setMaxLifetime(Integer.parseInt(PROPERTIES.getProperty("hikari.max-lifetime")));
+        config.setConnectionTimeout(Integer.parseInt(PROPERTIES.getProperty("hikari.connection-timeout")));
 
         // PostgreSQL specific settings
         config.addDataSourceProperty("cachePrepStmts", "true");
@@ -63,9 +63,9 @@ public class PostgresConfig {
     public void migrate() {
         Flyway flyway = Flyway.configure()
                 .dataSource(
-                        properties.getProperty("db.url"),
-                        properties.getProperty("db.username"),
-                        properties.getProperty("db.password")
+                        PROPERTIES.getProperty("db.url"),
+                        PROPERTIES.getProperty("db.username"),
+                        PROPERTIES.getProperty("db.password")
                 )
                 .load();
         flyway.migrate();

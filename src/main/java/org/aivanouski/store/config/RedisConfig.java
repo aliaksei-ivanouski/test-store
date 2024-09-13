@@ -6,14 +6,14 @@ import redis.clients.jedis.ConnectionPoolConfig;
 import redis.clients.jedis.JedisPooled;
 
 import java.time.Duration;
-import java.util.Properties;
+
+import static org.aivanouski.store.config.PropertiesConfig.PROPERTIES;
 
 public class RedisConfig {
 
     private static final Logger log = LoggerFactory.getLogger(RedisConfig.class);
 
     private JedisPooled jedis;
-    private static final Properties properties = PropertiesConfig.PROPERTIES;
 
     private static class RedisConfigHelper {
         private static final RedisConfig INSTANCE = new RedisConfig();
@@ -36,8 +36,8 @@ public class RedisConfig {
         poolConfig.setTimeBetweenEvictionRuns(Duration.ofSeconds(1));
         jedis = new JedisPooled(
                 poolConfig,
-                properties.getProperty("redis.host"),
-                Integer.parseInt(properties.getProperty("redis.port"))
+                PROPERTIES.getProperty("redis.host"),
+                Integer.parseInt(PROPERTIES.getProperty("redis.port"))
         );
     }
 
